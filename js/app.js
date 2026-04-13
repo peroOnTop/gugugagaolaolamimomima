@@ -18,10 +18,11 @@ if (toggleBtn) {
   });
 }
 
-// ================= MUSIC SYSTEM =================
+// ================= MUSIC SYSTEM (KORRIGIERT) =================
 const overlay = document.getElementById("introOverlay");
 const music = document.getElementById("bgMusic");
 const skipBtn = document.getElementById("skipBtn");
+const volumeSlider = document.getElementById("volumeSlider");
 
 const songs = [
   "assets/music1.mp3",
@@ -36,60 +37,62 @@ const songs = [
 
 let currentSong = "";
 
-// Random OHNE Wiederholung
+// Random ohne Wiederholung
 function getRandomSong() {
   let newSong;
-
   do {
     newSong = songs[Math.floor(Math.random() * songs.length)];
-  } while (newSong === currentSong);
-
+  } while (newSong === currentSong && songs.length > 1);
   currentSong = newSong;
   return newSong;
 }
 
-// Play mit Fade IN
-function playRandomSong() {
+// Play mit Fade IN auf Ziel-Lautstärke
+function playRandomSong(targetVolume = 0.15) {
   const song = getRandomSong();
-
   music.src = song;
   music.volume = 0;
 
-  music.play().catch(() => {
-    console.log("Autoplay blocked");
+  music.play().catch((e) => {
+    console.log("Autoplay blocked:", e);
   });
 
   let vol = 0;
   const fadeIn = setInterval(() => {
-    if (vol < 1) {
-      vol += 0.05;
-      music.volume = vol;
+    if (vol < targetVolume) {
+      vol += 0.01;
+      music.volume = Math.min(vol, targetVolume);
     } else {
       clearInterval(fadeIn);
     }
-  }, 100);
+  }, 50);
 }
 
 // Fade OUT + nächster Song
 function nextSong() {
   let vol = music.volume;
-
   const fadeOut = setInterval(() => {
     if (vol > 0) {
       vol -= 0.05;
-      music.volume = vol;
+      music.volume = Math.max(vol, 0);
     } else {
       clearInterval(fadeOut);
-      playRandomSong();
+      playRandomSong(volumeSlider ? parseFloat(volumeSlider.value) : 0.15);
     }
   }, 100);
 }
 
-// Start bei Klick
+// NUR EINEN Listener für das Overlay
 if (overlay) {
   overlay.addEventListener("click", () => {
     overlay.classList.add("hidden");
-    playRandomSong();
+    
+    // Volume Slider auf 0.15 setzen (oder Standard)
+    if (volumeSlider) {
+      volumeSlider.value = "0.10";
+    }
+    
+    playRandomSong(0.10); // Startet mit Ziel-Lautstärke 0.15
   });
 }
 
@@ -101,4 +104,11 @@ if (music) {
 // Skip Button
 if (skipBtn) {
   skipBtn.addEventListener("click", nextSong);
+}
+
+// Volume Slider
+if (volumeSlider) {
+  volumeSlider.addEventListener("input", function() {
+    music.volume = parseFloat(volumeSlider.value);
+  });
 }
