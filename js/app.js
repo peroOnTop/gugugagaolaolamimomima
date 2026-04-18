@@ -48,7 +48,7 @@ function getRandomSong() {
 }
 
 // Play mit Fade IN auf Ziel-Lautstärke
-function playRandomSong(targetVolume = 0.15) {
+function playRandomSong(targetVolume = 0.25) {
   const song = getRandomSong();
   music.src = song;
   music.volume = 0;
@@ -89,10 +89,10 @@ if (overlay) {
     
     // Volume Slider auf 0.15 setzen (oder Standard)
     if (volumeSlider) {
-      volumeSlider.value = "0.10";
+      volumeSlider.value = "0.25";
     }
     
-    playRandomSong(0.10); // Startet mit Ziel-Lautstärke 0.15
+    playRandomSong(0.25); // Startet mit Ziel-Lautstärke 0.15
   });
 }
 
