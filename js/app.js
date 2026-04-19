@@ -33,6 +33,7 @@ const songs = [
   "assets/music6.mp3",
   "assets/music7.mp3",
   "assets/music8.mp3",
+  "assets/music9.mp3",  
 ];
 
 let currentSong = "";
